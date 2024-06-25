@@ -43,7 +43,7 @@ document.addEventListener("keydown", (e) => {
   });
 
 const time = document.querySelector(".timer");
-console.log(time);
+// console.log(time);
 
 function chronometre(){
     var sec = 1;
