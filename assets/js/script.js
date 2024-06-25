@@ -33,11 +33,11 @@ document.addEventListener("keydown", (e) => {
         joueur.style.top = `${parseFloat(topNumber[0]) - change}px`;
     }
     // RIGHT key pressed
-    if (key === "ArrowRight" && leftNumber[0]<1820) {
+    if (key === "ArrowRight" && leftNumber[0]<largeecran-100) {
         joueur.style.left = `${parseFloat(leftNumber[0]) + change}px`;
     }
     // DOWN key pressed
-    if (key === "ArrowDown" && topNumber[0]<840) {
+    if (key === "ArrowDown" && topNumber[0]<hautecran-120) {
         joueur.style.top = `${parseFloat(topNumber[0]) + change}px`;
     }
   });
