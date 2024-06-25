@@ -42,19 +42,16 @@ document.addEventListener("keydown", (e) => {
     }
   });
 
-// document.addEventListener("keydown", (ev) => {
+const time = document.querySelector(".timer");
+console.log(time);
 
-//   const dir = (ev.key.match(/(?<=^Arrow)\w+/)||[])[0];
-//   if (!dir) return; // Not an arrow key.
-  
-//   ev.preventDefault(); // Prevent Browser scroll if overflow
+function chronometre(){
+    var sec = 1;
+    setInterval(function(){
+        time.innerHTML ="temps: "+sec;
+        sec++;
+        // console.log(sec);
+    }, 1000);
+}
 
-//   ({
-//     Left:  () => pos.x -= 5,
-//     Right: () => pos.x += 5,
-//     Up:    () => pos.y -= 5,
-//     Down:  () => pos.y += 5,
-//   }[dir])(); 
-  
-//   joueur.style.transform = `translate(${pos.x}px, ${pos.y}px)`
-// });
+document.addEventListener("onload",chronometre());
