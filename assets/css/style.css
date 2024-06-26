@@ -32,3 +32,12 @@ main{
     color: white;
     font-size: 30px;
 }
+
+.holdfish{
+    position: absolute;
+}
+
+.poisson{
+    width: 60px;
+    height: 60px;
+}
