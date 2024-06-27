@@ -55,17 +55,19 @@ function chronometre(){
 }
 
 document.addEventListener("onload",chronometre());
+const holdfish = document.querySelector(".holdfish");
 
 function poisson(posx,posy){
-    const holdfish = document.querySelector(".holdfish");
     holdfish.style.left = posx+"px";
     holdfish.style.top = posy+"px";
     holdfish.innerHTML = `<img class="poisson" src="./assets/images/poisson.png">`
 }
 
+poisson(0,50);
+
 // setInterval(() =>{
 //     var posx = Math.floor(Math.random() * largeecran);
 //     var posy = Math.floor(Math.random() * hautecran);
-//     console.log(posx, posy);
+//     // console.log(posx, posy);
 //     poisson(posx,posy);
 // },1000);
