@@ -2,6 +2,7 @@ console.log("Js chargé")
 
 // Get the modal
 var modal = document.getElementById("myModal");
+var modal2 = document.getElementById("myModal2");
 
 // Get the <span> element that closes the modal
 var span = document.getElementsByClassName("close")[0];
