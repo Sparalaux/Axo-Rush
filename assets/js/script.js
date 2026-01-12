@@ -5,6 +5,7 @@ const modal = document.getElementById("myModal");
 const modal2 = document.getElementById("myModal2");
 const span = document.getElementsByClassName("close")[0];
 
+
 // ===== UI =====
 const scoreText = document.querySelector(".score h3");
 const timeText = document.querySelector(".timer");
@@ -12,12 +13,16 @@ const timeText = document.querySelector(".timer");
 // ===== GAME ELEMENTS =====
 const joueur = document.querySelector(".joueur");
 const danger = document.querySelector(".danger");
+const finalScoreText = document.getElementById("finalScore");
+const finalTimeText = document.getElementById("finalTime");
+const replayBtn = document.getElementById("replayBtn");
 
 // ===== GAME STATE =====
 let score = 0;
 let time = 0;
 let gameOver = false;
 let gameStarted = false;
+
 
 // ===== POISSONS =====
 let poissons = [];
@@ -213,11 +218,20 @@ function gameLoop() {
 
 function endGame() {
     gameOver = true;
+
+    finalScoreText.innerHTML = "Score : " + score;
+    finalTimeText.innerHTML = "Temps survécu : " + time + " s";
+
     modal2.style.display = "block";
 
     clearInterval(chronoInterval);
     clearInterval(poissonSpawnInterval);
 }
+
+replayBtn.addEventListener("click", () => {
+    modal2.style.display = "none";
+    startGame();
+});
 
 
 
