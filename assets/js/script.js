@@ -1,174 +1,224 @@
-console.log("Js chargé")
+console.log("JS chargé");
 
-// Get the modal
-var modal = document.getElementById("myModal");
-var modal2 = document.getElementById("myModal2");
-let score = 0;
+// ===== MODALS =====
+const modal = document.getElementById("myModal");
+const modal2 = document.getElementById("myModal2");
+const span = document.getElementsByClassName("close")[0];
+
+// ===== UI =====
 const scoreText = document.querySelector(".score h3");
-// Get the <span> element that closes the modal
-var span = document.getElementsByClassName("close")[0];
+const timeText = document.querySelector(".timer");
 
+// ===== GAME ELEMENTS =====
+const joueur = document.querySelector(".joueur");
 const danger = document.querySelector(".danger");
+
+// ===== GAME STATE =====
+let score = 0;
+let time = 0;
 let gameOver = false;
+let gameStarted = false;
+
+// ===== POISSONS =====
+let poissons = [];
+const maxPoissons = 5;
+const poissonLifetime = 4000;
+
+// ===== DANGER =====
 let dangerSpeed = 4;
 
-// When the user clicks on <span> (x), close the modal
-span.onclick = function() {
+// ===== TIMERS =====
+let chronoInterval;
+let poissonSpawnInterval;
+let gameLoopInterval;
+
+// ================== MODALS ==================
+
+span.onclick = () => {
     modal.style.display = "none";
-    jeu();
-}
-  
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
-    if (event.target == modal) {
-      modal.style.display = "none";
-      jeu();
+    startGame();
+};
+
+window.onclick = (e) => {
+    if (e.target === modal) {
+        modal.style.display = "none";
+        startGame();
     }
-}
+};
 
-
-function start(){
+function start() {
     modal.style.display = "block";
 }
 
-document.addEventListener("onload", start());
+document.addEventListener("DOMContentLoaded", start);
 
-const time = document.querySelector(".timer");
-// console.log(time);
+// ================== INPUT ==================
 
-function chronometre(){
-    var sec = 1;
-    setInterval(function(){
-        time.innerHTML ="temps: "+sec;
-        sec++;
-        // console.log(sec);
+document.addEventListener("keydown", (e) => {
+    if (!gameStarted || gameOver) return;
+
+    const change = 10;
+    const cs = getComputedStyle(joueur);
+    let left = parseInt(cs.left);
+    let top = parseInt(cs.top);
+
+    const maxX = window.innerWidth - 100;
+    const maxY = window.innerHeight - 120;
+
+    switch (e.code) {
+        case "ArrowLeft":
+            if (left > 0) joueur.style.left = left - change + "px";
+            break;
+        case "ArrowRight":
+            if (left < maxX) joueur.style.left = left + change + "px";
+            break;
+        case "ArrowUp":
+            if (top > 0) joueur.style.top = top - change + "px";
+            break;
+        case "ArrowDown":
+            if (top < maxY) joueur.style.top = top + change + "px";
+            break;
+    }
+});
+
+// ================== GAME FUNCTIONS ==================
+
+function startGame() {
+    resetGame();
+    gameStarted = true;
+
+    startChrono();
+    startPoissonSpawn();
+    spawnDanger();
+
+    gameLoopInterval = setInterval(gameLoop, 30);
+}
+
+function resetGame() {
+    // reset state
+    score = 0;
+    time = 0;
+    gameOver = false;
+
+    scoreText.innerHTML = "score: 0";
+    timeText.innerHTML = "temps: 0";
+
+    // reset player
+    joueur.style.left = "100px";
+    joueur.style.top = "100px";
+
+    // clear poissons
+    poissons.forEach(p => p.remove());
+    poissons = [];
+
+    // clear intervals
+    clearInterval(chronoInterval);
+    clearInterval(poissonSpawnInterval);
+    clearInterval(gameLoopInterval);
+
+    modal2.style.display = "none";
+}
+
+// ================== CHRONO ==================
+
+function startChrono() {
+    chronoInterval = setInterval(() => {
+        time++;
+        timeText.innerHTML = "temps: " + time;
     }, 1000);
 }
 
-const holdfish = document.querySelector(".holdfish");
+// ================== POISSONS ==================
 
-function spawnPoisson() {
-    const posx = Math.random() * (window.innerWidth - 50);
-    const posy = Math.random() * (window.innerHeight - 50);
-
-    holdfish.style.left = posx + "px";
-    holdfish.style.top = posy + "px";
-    holdfish.innerHTML = `<img class="poisson" src="./assets/images/poisson.png">`;
+function startPoissonSpawn() {
+    poissonSpawnInterval = setInterval(() => {
+        if (poissons.length < maxPoissons && !gameOver) {
+            createPoisson();
+        }
+    }, 800);
 }
 
-function isColliding(a, b) {
-    const rect1 = a.getBoundingClientRect();
-    const rect2 = b.getBoundingClientRect();
+function createPoisson() {
+    const poisson = document.createElement("img");
+    poisson.src = "./assets/images/poisson.png";
+    poisson.classList.add("poisson");
 
-    return !(
-        rect1.right < rect2.left ||
-        rect1.left > rect2.right ||
-        rect1.bottom < rect2.top ||
-        rect1.top > rect2.bottom
-    );
+    poisson.style.left = Math.random() * (window.innerWidth - 40) + "px";
+    poisson.style.top = Math.random() * (window.innerHeight - 40) + "px";
+
+    document.body.appendChild(poisson);
+    poissons.push(poisson);
+
+    setTimeout(() => {
+        if (poissons.includes(poisson)) {
+            poisson.remove();
+            poissons = poissons.filter(p => p !== poisson);
+        }
+    }, poissonLifetime);
 }
 
-function addScore() {
-    score++;
-    scoreText.innerHTML = "score: " + score;
-}
+// ================== DANGER ==================
 
 function spawnDanger() {
-    const y = Math.random() * (window.innerHeight - 60);
-
     danger.style.left = "-60px";
-    danger.style.top = y + "px";
+    danger.style.top = Math.random() * (window.innerHeight - 60) + "px";
 }
 
 function moveDanger() {
     let x = parseInt(danger.style.left);
-
     x += dangerSpeed;
     danger.style.left = x + "px";
 
-    if (x > window.innerWidth) {
-        spawnDanger();
-    }
+    if (x > window.innerWidth) spawnDanger();
 }
+
+// ================== COLLISIONS ==================
+
+function isColliding(a, b) {
+    const r1 = a.getBoundingClientRect();
+    const r2 = b.getBoundingClientRect();
+
+    return !(
+        r1.right < r2.left ||
+        r1.left > r2.right ||
+        r1.bottom < r2.top ||
+        r1.top > r2.bottom
+    );
+}
+
+// ================== GAME LOOP ==================
+
+function gameLoop() {
+    if (gameOver) return;
+
+    // Danger
+    moveDanger();
+    if (isColliding(joueur, danger)) {
+        endGame();
+        return;
+    }
+
+    // Poissons
+    poissons.forEach((poisson, index) => {
+        if (isColliding(joueur, poisson)) {
+            score++;
+            scoreText.innerHTML = "score: " + score;
+            poisson.remove();
+            poissons.splice(index, 1);
+        }
+    });
+}
+
+// ================== GAME OVER ==================
 
 function endGame() {
     gameOver = true;
     modal2.style.display = "block";
+
+    clearInterval(chronoInterval);
+    clearInterval(poissonSpawnInterval);
 }
 
-
-function jeu(){
-    const joueur = document.querySelector(".joueur");
-    pos = joueur.getBoundingClientRect();
-    console.log(pos.top, pos.left, pos.bottom, pos.right);
-
-    const hautecran = window.innerHeight;
-    const largeecran = window.innerWidth;
-    console.log(hautecran, largeecran);
-
-
-    document.addEventListener("keydown", (e) => {
-        const key = e.code;
-        console.log(key);
-        const cs = getComputedStyle(joueur);
-
-        e.preventDefault();
-    
-        const change = 10;
-        const regex = /[\d\.]*/;
-    
-        let left = parseInt(cs.left);
-        let top = parseInt(cs.top);
-    
-        if (gameOver) return;
-        // LEFT key pressed
-        if (key === "ArrowLeft" && left > 0) {
-            joueur.style.left = (left - change) + "px";
-        }
-        // TOP key pressed
-        if (key === "ArrowUp" && top>0) {
-            joueur.style.top = (top - change)+'px';
-        }
-        // RIGHT key pressed
-        if (key === "ArrowRight" && left < largeecran - 100) {
-            joueur.style.left = (left + change) + "px";
-        }
-        // DOWN key pressed
-        if (key === "ArrowDown" && top<hautecran-120) {
-            joueur.style.top = (top + change)+"px";
-        }
-    });
-    
-    chronometre();
-
-    spawnPoisson();
-
-    setInterval(() => {
-        const joueur = document.querySelector(".joueur");
-        const poissonImg = document.querySelector(".poisson");
-
-        if (poissonImg && isColliding(joueur, poissonImg)) {
-            addScore();
-            spawnPoisson();
-        }
-    }, 50);
-
-    spawnDanger();
-
-    const gameLoop = setInterval(() => {
-        if (gameOver) {
-            clearInterval(gameLoop);
-            return;
-        }
-
-        moveDanger();
-
-        if (isColliding(joueur, danger)) {
-            endGame();
-        }
-    }, 30);
-
-}
 
 
 
