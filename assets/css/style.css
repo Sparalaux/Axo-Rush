@@ -103,3 +103,13 @@ main{
     width: 60px;
     height: 60px;
 }
+
+.danger {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background: red; /* temporaire */
+    border-radius: 50%;
+    top: 100px;
+    left: 0;
+}

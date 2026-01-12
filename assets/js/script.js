@@ -8,6 +8,10 @@ const scoreText = document.querySelector(".score h3");
 // Get the <span> element that closes the modal
 var span = document.getElementsByClassName("close")[0];
 
+const danger = document.querySelector(".danger");
+let gameOver = false;
+let dangerSpeed = 4;
+
 // When the user clicks on <span> (x), close the modal
 span.onclick = function() {
     modal.style.display = "none";
@@ -69,6 +73,30 @@ function addScore() {
     scoreText.innerHTML = "score: " + score;
 }
 
+function spawnDanger() {
+    const y = Math.random() * (window.innerHeight - 60);
+
+    danger.style.left = "-60px";
+    danger.style.top = y + "px";
+}
+
+function moveDanger() {
+    let x = parseInt(danger.style.left);
+
+    x += dangerSpeed;
+    danger.style.left = x + "px";
+
+    if (x > window.innerWidth) {
+        spawnDanger();
+    }
+}
+
+function endGame() {
+    gameOver = true;
+    modal2.style.display = "block";
+}
+
+
 function jeu(){
     const joueur = document.querySelector(".joueur");
     pos = joueur.getBoundingClientRect();
@@ -92,6 +120,7 @@ function jeu(){
         let left = parseInt(cs.left);
         let top = parseInt(cs.top);
     
+        if (gameOver) return;
         // LEFT key pressed
         if (key === "ArrowLeft" && left > 0) {
             joueur.style.left = (left - change) + "px";
@@ -123,6 +152,22 @@ function jeu(){
             spawnPoisson();
         }
     }, 50);
+
+    spawnDanger();
+
+    const gameLoop = setInterval(() => {
+        if (gameOver) {
+            clearInterval(gameLoop);
+            return;
+        }
+
+        moveDanger();
+
+        if (isColliding(joueur, danger)) {
+            endGame();
+        }
+    }, 30);
+
 }
 
 
