@@ -3,7 +3,8 @@ console.log("Js chargé")
 // Get the modal
 var modal = document.getElementById("myModal");
 var modal2 = document.getElementById("myModal2");
-
+let score = 0;
+const scoreText = document.querySelector(".score h3");
 // Get the <span> element that closes the modal
 var span = document.getElementsByClassName("close")[0];
 
@@ -42,12 +43,31 @@ function chronometre(){
 
 const holdfish = document.querySelector(".holdfish");
 
-function poisson(posx,posy){
-    holdfish.style.left = posx+"px";
-    holdfish.style.top = posy+"px";
-    holdfish.innerHTML = `<img class="poisson" src="./assets/images/poisson.png">`
+function spawnPoisson() {
+    const posx = Math.random() * (window.innerWidth - 50);
+    const posy = Math.random() * (window.innerHeight - 50);
+
+    holdfish.style.left = posx + "px";
+    holdfish.style.top = posy + "px";
+    holdfish.innerHTML = `<img class="poisson" src="./assets/images/poisson.png">`;
 }
 
+function isColliding(a, b) {
+    const rect1 = a.getBoundingClientRect();
+    const rect2 = b.getBoundingClientRect();
+
+    return !(
+        rect1.right < rect2.left ||
+        rect1.left > rect2.right ||
+        rect1.bottom < rect2.top ||
+        rect1.top > rect2.bottom
+    );
+}
+
+function addScore() {
+    score++;
+    scoreText.innerHTML = "score: " + score;
+}
 
 function jeu(){
     const joueur = document.querySelector(".joueur");
@@ -69,39 +89,40 @@ function jeu(){
         const change = 10;
         const regex = /[\d\.]*/;
     
-        const left = cs.left;
-        const top = cs.top;
-        const leftNumber = left.match(regex);
-        const topNumber = top.match(regex);
+        let left = parseInt(cs.left);
+        let top = parseInt(cs.top);
     
         // LEFT key pressed
-        if (key === "ArrowLeft" && leftNumber[0]>0) {
-        joueur.style.left = `${parseFloat(leftNumber[0]) - change}px`;
+        if (key === "ArrowLeft" && left > 0) {
+            joueur.style.left = (left - change) + "px";
         }
         // TOP key pressed
-        if (key === "ArrowUp" && topNumber[0]>30) {
-            joueur.style.top = `${parseFloat(topNumber[0]) - change}px`;
+        if (key === "ArrowUp" && top>0) {
+            joueur.style.top = (top - change)+'px';
         }
         // RIGHT key pressed
-        if (key === "ArrowRight" && leftNumber[0]<largeecran-100) {
-            joueur.style.left = `${parseFloat(leftNumber[0]) + change}px`;
+        if (key === "ArrowRight" && left < largeecran - 100) {
+            joueur.style.left = (left + change) + "px";
         }
         // DOWN key pressed
-        if (key === "ArrowDown" && topNumber[0]<hautecran-120) {
-            joueur.style.top = `${parseFloat(topNumber[0]) + change}px`;
+        if (key === "ArrowDown" && top<hautecran-120) {
+            joueur.style.top = (top + change)+"px";
         }
     });
     
     chronometre();
 
-    poisson(0,50);
+    spawnPoisson();
 
-// setInterval(() =>{
-//     var posx = Math.floor(Math.random() * largeecran);
-//     var posy = Math.floor(Math.random() * hautecran);
-//     // console.log(posx, posy);
-//     poisson(posx,posy);
-// },1000);
+    setInterval(() => {
+        const joueur = document.querySelector(".joueur");
+        const poissonImg = document.querySelector(".poisson");
+
+        if (poissonImg && isColliding(joueur, poissonImg)) {
+            addScore();
+            spawnPoisson();
+        }
+    }, 50);
 }
 
 
