@@ -1,6 +1,7 @@
 *{
     margin: 0;
     padding: 0;
+    overflow: hidden;
 }
 
 main{
@@ -79,6 +80,15 @@ main{
 
 
 /*gestion du jeu*/
+
+#gameArea {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden; /* CLÉ */
+    background: #b3e5fc; /* optionnel */
+}
+
 .joueur{
     width: 100px;
     height: 100px;

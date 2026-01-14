@@ -16,12 +16,15 @@ const danger = document.querySelector(".danger");
 const finalScoreText = document.getElementById("finalScore");
 const finalTimeText = document.getElementById("finalTime");
 const replayBtn = document.getElementById("replayBtn");
+const gameArea = document.getElementById("gameArea");
 
 // ===== GAME STATE =====
 let score = 0;
 let time = 0;
 let gameOver = false;
 let gameStarted = false;
+const areaWidth = gameArea.clientWidth;
+const areaHeight = gameArea.clientHeight;
 
 
 // ===== POISSONS =====
@@ -62,13 +65,13 @@ document.addEventListener("DOMContentLoaded", start);
 document.addEventListener("keydown", (e) => {
     if (!gameStarted || gameOver) return;
 
-    const change = 10;
+    const change = 15;
     const cs = getComputedStyle(joueur);
     let left = parseInt(cs.left);
     let top = parseInt(cs.top);
 
-    const maxX = window.innerWidth - 100;
-    const maxY = window.innerHeight - 120;
+    const maxX = areaWidth - 100;
+    const maxY = areaHeight - 120;
 
     switch (e.code) {
         case "ArrowLeft":
@@ -109,8 +112,8 @@ function resetGame() {
     timeText.innerHTML = "temps: 0";
 
     // reset player
-    joueur.style.left = "100px";
-    joueur.style.top = "100px";
+    joueur.style.left = "50%";
+    joueur.style.top = "50%";
 
     // clear poissons
     poissons.forEach(p => p.remove());
@@ -148,10 +151,10 @@ function createPoisson() {
     poisson.src = "./assets/images/poisson.png";
     poisson.classList.add("poisson");
 
-    poisson.style.left = Math.random() * (window.innerWidth - 40) + "px";
-    poisson.style.top = Math.random() * (window.innerHeight - 40) + "px";
+    poisson.style.left = Math.random() * (areaWidth - 40) + "px";
+    poisson.style.top = Math.random() * (areaHeight - 40) + "px";
 
-    document.body.appendChild(poisson);
+    gameArea.appendChild(poisson);
     poissons.push(poisson);
 
     setTimeout(() => {
@@ -166,7 +169,7 @@ function createPoisson() {
 
 function spawnDanger() {
     danger.style.left = "-60px";
-    danger.style.top = Math.random() * (window.innerHeight - 60) + "px";
+    danger.style.top = Math.random() * (areaHeight - 60) + "px";
 }
 
 function moveDanger() {
