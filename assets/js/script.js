@@ -12,7 +12,6 @@ const timeText = document.querySelector(".timer");
 
 // ===== GAME ELEMENTS =====
 const joueur = document.querySelector(".joueur");
-const danger = document.querySelector(".danger");
 const finalScoreText = document.getElementById("finalScore");
 const finalTimeText = document.getElementById("finalTime");
 const replayBtn = document.getElementById("replayBtn");
@@ -34,6 +33,9 @@ const poissonLifetime = 4000;
 
 // ===== DANGER =====
 let dangerSpeed = 4;
+let dangers = [];
+const maxDangers = 6;
+let dangerSpawnInterval;
 
 // ===== TIMERS =====
 let chronoInterval;
@@ -96,8 +98,8 @@ function startGame() {
     gameStarted = true;
 
     startChrono();
+    startDangerSpawn();
     startPoissonSpawn();
-    spawnDanger();
 
     gameLoopInterval = setInterval(gameLoop, 30);
 }
@@ -119,10 +121,15 @@ function resetGame() {
     poissons.forEach(p => p.remove());
     poissons = [];
 
+    //clear dangers
+    dangers.forEach(d => d.element.remove());
+    dangers = [];
+
     // clear intervals
     clearInterval(chronoInterval);
     clearInterval(poissonSpawnInterval);
     clearInterval(gameLoopInterval);
+    clearInterval(dangerSpawnInterval);
 
     modal2.style.display = "none";
 }
@@ -168,16 +175,50 @@ function createPoisson() {
 // ================== DANGER ==================
 
 function spawnDanger() {
+    if (dangers.length >= maxDangers) return;
+
+    const danger = document.createElement("div");
+    danger.classList.add("danger");
+
     danger.style.left = "-60px";
     danger.style.top = Math.random() * (areaHeight - 60) + "px";
+
+    gameArea.appendChild(danger);
+
+    dangers.push({
+        element: danger,
+        x: -60,
+        speed: 3 + Math.random() * 3 // vitesse aléatoire
+    });
 }
 
-function moveDanger() {
-    let x = parseInt(danger.style.left);
-    x += dangerSpeed;
-    danger.style.left = x + "px";
+function moveDangers() {
 
-    if (x > window.innerWidth) spawnDanger();
+    dangers.forEach((dangerObj, index) => {
+
+        dangerObj.x += dangerObj.speed;
+        dangerObj.element.style.left = dangerObj.x + "px";
+
+        if (dangerObj.x > areaWidth) {
+            dangerObj.element.remove();
+            dangers.splice(index, 1);
+        }
+
+    });
+
+}
+
+function startDangerSpawn() {
+
+    spawnDanger(); // premier danger
+
+    dangerSpawnInterval = setInterval(() => {
+
+        if (!gameOver && dangers.length < maxDangers) {
+            spawnDanger();
+        }
+
+    }, 10000); 
 }
 
 // ================== COLLISIONS ==================
@@ -200,11 +241,13 @@ function gameLoop() {
     if (gameOver) return;
 
     // Danger
-    moveDanger();
-    if (isColliding(joueur, danger)) {
-        endGame();
-        return;
-    }
+    moveDangers();
+
+    dangers.forEach(dangerObj => {
+        if (isColliding(joueur, dangerObj.element)) {
+            endGame();
+        }
+    });
 
     // Poissons
     poissons.forEach((poisson, index) => {
