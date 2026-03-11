@@ -102,6 +102,25 @@ main{
 
 .joueur img{
     width: 100%;
+    animation: swim 1.5s infinite ease-in-out;
+}
+
+@keyframes swim {
+    0% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    25% {
+        transform: translateY(-5px) rotate(-2deg);
+    }
+    50% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    75% {
+        transform: translateY(5px) rotate(2deg);
+    }
+    100% {
+        transform: translateY(0px) rotate(0deg);
+    }
 }
 
 .score{

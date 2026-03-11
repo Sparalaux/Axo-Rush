@@ -78,9 +78,11 @@ document.addEventListener("keydown", (e) => {
     switch (e.code) {
         case "ArrowLeft":
             if (left > 0) joueur.style.left = left - change + "px";
+            joueur.style.transform = "scaleX(1)";
             break;
         case "ArrowRight":
             if (left < maxX) joueur.style.left = left + change + "px";
+            joueur.style.transform = "scaleX(-1)";
             break;
         case "ArrowUp":
             if (top > 0) joueur.style.top = top - change + "px";
