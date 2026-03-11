@@ -180,15 +180,50 @@ function spawnDanger() {
     const danger = document.createElement("div");
     danger.classList.add("danger");
 
-    danger.style.left = "-60px";
-    danger.style.top = Math.random() * (areaHeight - 60) + "px";
+    const direction = Math.floor(Math.random() * 4);
+
+    let x, y, speedX = 0, speedY = 0;
+    const speed = 3 + Math.random() * 2;
+
+    // gauche → droite
+    if (direction === 0) {
+        x = -60;
+        y = Math.random() * (areaHeight - 60);
+        speedX = speed;
+    }
+
+    // droite → gauche
+    if (direction === 1) {
+        x = areaWidth + 60;
+        y = Math.random() * (areaHeight - 60);
+        speedX = -speed;
+    }
+
+    // haut → bas
+    if (direction === 2) {
+        x = Math.random() * (areaWidth - 60);
+        y = -60;
+        speedY = speed;
+    }
+
+    // bas → haut
+    if (direction === 3) {
+        x = Math.random() * (areaWidth - 60);
+        y = areaHeight + 60;
+        speedY = -speed;
+    }
+
+    danger.style.left = x + "px";
+    danger.style.top = y + "px";
 
     gameArea.appendChild(danger);
 
     dangers.push({
         element: danger,
-        x: -60,
-        speed: 3 + Math.random() * 3 // vitesse aléatoire
+        x: x,
+        y: y,
+        speedX: speedX,
+        speedY: speedY
     });
 }
 
@@ -196,10 +231,18 @@ function moveDangers() {
 
     dangers.forEach((dangerObj, index) => {
 
-        dangerObj.x += dangerObj.speed;
-        dangerObj.element.style.left = dangerObj.x + "px";
+        dangerObj.x += dangerObj.speedX;
+        dangerObj.y += dangerObj.speedY;
 
-        if (dangerObj.x > areaWidth) {
+        dangerObj.element.style.left = dangerObj.x + "px";
+        dangerObj.element.style.top = dangerObj.y + "px";
+
+        if (
+            dangerObj.x < -100 ||
+            dangerObj.x > areaWidth + 100 ||
+            dangerObj.y < -100 ||
+            dangerObj.y > areaHeight + 100
+        ) {
             dangerObj.element.remove();
             dangers.splice(index, 1);
         }
